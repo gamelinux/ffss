@@ -1,0 +1,40 @@
+## This file will try to explain how to write the rules, so they pass the pre-commit hooks.
+###########################################################################################
+#
+# 
+#
+# Example rule, that should pass the test (more example rules can be found in rules/ )
+#
+alert tcp $HOME_NET any -> $EXTERNAL_NET $HTTP_PORTS (msg:"ACRONYME TROJAN Win32.BadBanker.B Checkin"; flow:established,to_server; content:"POST"; http_method; content:".php?ffss=r0kz"; fast_pattern:only; http_uri; content:"User-Agent: c00l|0D 0A|"; http_header; reference:md5,804b1417ab3bd261fe6f4cb2c54511f0; metadata:author acronyme-user, dengine snort-2.9.4, tlp white, type banker, killchain c2, intrusionset poetlovers starstrikers, enabled yes, date_created 2013-01-01, date_modified 2013-01-12; classtype:trojan-activity; sid:3000002; rev:1;)
+#
+# When writing a rule, the important things to pass the rule format test, are as follow:
+#
+# List of all checks that are done:
+* Rules should start with (drop|alert|log|pass|activate|dynamic)
+* Basic rule order you need to have: msg.*metadata.*classtype.*sid.*rev
+* Metadata field should contain all fields in a locked order:
+  metadata:author acronyme-user, dengine snort-2.9.4, tlp white, type banking, killchain c2, intrusionset poetlovers starstrikers, enabled yes, date_created 2013-01-01, date_modified 2013-01-12;
+  ** Valid field and options:
+  author        : <whateveruser>
+  dengine       : (snort|suricata)-(\d\.\d{1,2}(\.\d{1,2})?)
+  tlp           : (white|green|amber|red)
+  type          : What kind of malware family is this (banking, infostealer, targeted, ransome, ...)
+  killchain     : (reconnaissance|weaponization|delivery|exploitation|installation|c2|actions)
+  intrusionset  : <whatever_names_you_have>
+  enabled       : (yes|no)
+  date_created  : \d\d\d\d-\d\d-\d\d  (date --iso)
+  date_modified : \d\d\d\d-\d\d-\d\d  (date --iso)
+
+  - Note to the dengine field: Its ment as an indicator of what detection engine the rule
+    was written for (and tested). The rule might still work on other detection engines.
+
+* Always write "options:value;" and not "option: value;" or "option:value ;"
+* Always have a space between entries, like: "options:value; options:value;"
+   and not like: "options:value;options:value;"
+
+* Always use (to_server|to_client) and not (from_client|from_server)
+* Always write state before direction, like: "flow:established,to_server;"
+   and not like: "flow:to_server,established;"
+
+
+

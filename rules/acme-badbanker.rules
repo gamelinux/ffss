@@ -1,0 +1,20 @@
+####################################################################################################
+#documentation (sid:3000002; docrev:1; head:"This rule is just an example and should not be used! It looks for the BadBanker malware which is used for strealing your $$"; body:"Here you can write a longer wrapup if you need. This can explain alot more details of what it tries to detect etc."; false_positive:"This rule should give a very low rate of false positives"; false_negative:"They might accure, but no known"; false_positive_score:1; false_negative_score:1; severity:1; confidence:90; impact:"Loss of Integrity, Information Disclosure"; ease_of_attack:"Simple,driveby or social engineering"; corrective_actions:"Update antivirus software and signatures. Always keep operation system up to date with patches";)
+## sid:3000002;
+## If a line with the format /^## sid:\d{7};/ is found:
+##  - Then lines that starts with double /^## (.*)$/ will be read and stored as extra documentation.
+##  - It will continue storing lines until it finds a line that matches: /^## ##$/ or it
+##    should error out if it dont see that, but any lines that starts with "signature" (alert etc)
+##    or "#threshold " or "#suppress "
+##  - If such a line is not found, alle the lines will be discardet!
+##  - So keep extra log data here, like this etc:
+## md5: aa645fa8ad28e9a1c8f86eb577cddddd
+## --8<--
+## POST /ffss.php?ffss=r0kz HTTP/1.1
+## User-Agent: c00l
+## Host: www.verybad.com
+## Pragma: no-cache
+## --8<--
+alert tcp $HOME_NET any -> $EXTERNAL_NET $HTTP_PORTS (msg:"ACME TROJAN Win32.BadBanker.B Checkin"; flow:established,to_server; content:"POST"; http_method; content:".php?ffss=r0kz"; fast_pattern:only; http_uri; content:"User-Agent: c00l|0D 0A|"; http_header; reference:md5,804b1417ab3bd261fe6f4cb2c54511f0; metadata:author acronyme-user, dengine snort-2.9.4, tlp white, type banker, killchain c2, intrusionset poetlovers starstrikers, enabled yes, date_created 2013-01-01, date_modified 2013-01-12; classtype:trojan-activity; sid:3000002; rev:1;)
+#threshold gen_id 1, sig_id 3000002, type limit, track by_src, count 1, seconds 15
+#suppress gen_id 1, sig_id 3000002, track by_src, ip 192.168.0.1

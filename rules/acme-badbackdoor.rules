@@ -1,0 +1,29 @@
+####################################################################################################
+#documentation (sid:3000003; docrev:1; head:"This rule is just an example and should not be used! It looks for the BadBanker malware which is used for strealing your $$"; body:"Here you can write a longer wrapup if you need. This can explain alot more details of what it tries to detect etc."; false_positive:"This rule should give a very low rate of false positives"; false_negative:"They might accure, but no known"; false_positive_score:1; false_negative_score:1; severity:1; confidence:90; impact:"Loss of Integrity, Information Disclosure"; ease_of_attack:"Simple,driveby or social engineering"; corrective_actions:"Update antivirus software and signatures. Always keep operation system up to date with patches";)
+## sid:3000003;
+## If a line with the format /^## sid:\d{7};/ is found:
+##  - Then lines that starts with double /^## (.*)$/ will be read and stored as extra documentation.
+##  - It will continue storing lines until it finds a line that matches: /^## ##$/ or it
+##    should error out if it dont see that, but any lines that starts with "signature" (alert etc)
+##    or "#threshold " or "#suppress "
+##  - If such a line is not found, alle the lines will be discardet!
+##  - So keep extra log data here, like this etc:
+## md5: aa645fa8ad28e9a1c8f86eb577cddddd
+## --8<--
+## GET /aso2kf7/search?query=checkin HTTP/1.1
+## User-Agent: Moxilla/4.0 (Compatible;)
+## Host: www.tageted.com
+## --8<--
+## ##
+alert tcp $HOME_NET any -> $EXTERNAL_NET $HTTP_PORTS (msg:"ACME TROJAN Win32.BadBackdoor.C Checkin"; flow:established,to_server; content:"GET"; http_method; content:"/search?query=checkin"; http_uri; content:"User-Agent: Moxilla/4.0 (Compatible;)|0D 0A|"; fast_pattern; http_header; reference:md5,898714122b3bd263333f4cb2c5453333; metadata:author acme-user, dengine snort-2.9.1, tlp amber, type targeted, killchain c2, intrusionset blue_vodka, enabled yes, date_created 2013-01-01, date_modified 2013-01-12; classtype:trojan-activity; sid:3000003; rev:1;)
+#threshold gen_id 1, sig_id 3000003, type limit, track by_src, count 1, seconds 15
+#suppress gen_id 1, sig_id 3000003, track by_src, ip 192.168.0.1
+####################################################################################################
+#documentation (sid:3000004; docrev:1; head:"This rule is just an example and should not be used! It looks for DNS query to a domain used with the BadBanker malware which is used for strealing your $$"; body:"Here you can write a longer wrapup if you need. This can explain alot more details of what it tries to detect etc."; false_positive:"This rule should give a very low rate of false positives"; false_negative:"They might accure, but no known"; false_positive_score:1; false_negative_score:1; severity:1; confidence:90; impact:"Loss of Integrity, Information Disclosure"; ease_of_attack:"Simple,driveby or social engineering"; corrective_actions:"Update antivirus software and signatures. Always keep operation system up to date with patches";)
+## sid:3000004;
+## md5: aa645fa8ad28e9a1c8f86eb577cddddd
+## Domain www.tageted.com
+## ##
+alert udp $HOME_NET any -> $EXTERNAL_NET 53 (msg:"ACME DNS Query for a Suspicious domain: www.tageted.com"; content:"|01 00 00 01 00 00 00 00 00|"; offset:2; depth:9; content:"|00 03|www|07|tageted|03|com|00|"; fast_pattern; nocase; distance:0; metadata:author acme-user, dengine suricata-1.4, tlp amber, type targeted, killchain c2, intrusionset unknown, enabled yes, date_created 2013-02-07, date_modified 2013-02-07; classtype:trojan-activity; sid:3000004; rev:1;)
+#threshold gen_id 1, sig_id 3000004, type limit, track by_src, count 1, seconds 15
+#suppress gen_id 1, sig_id 3000004, track by_src, ip 192.168.0.1

@@ -1,0 +1,28 @@
+
+INSTALL
+=======
+
+copy the bin/git-client-pre-commit.pl to .git/hooks/pre-commit and make sure the file is executable.
+
+That should ensure you that when you do a git commit, that all relevant check on you local repo is
+done, and that its ok to try to push them to "origin master" if needed.
+
+
+To come:
+There is also a bin/git-server-pre-commit.pl script that I will commit soon, that will
+do the same verification on the server side, but it will also push the rules into a mongodb.
+
+This is to ensure, that if you update a sid, you need to change the revision :)
+
+Mongodb will also be used to fetch the autorative rules from that you should push out to
+your sensors in some way (or manage/fetch them by Oinkmaster/Pulledpork/Polman etc).
+
+A script to fetch rules and doc from the mongodb will be made, so if you want to share
+a set of specific rules, you can do something like this to extract them:
+
+$ bin/script-to-make-a-ruleset.pl --tlp amber --type ransome --intrusionset vodka --no-documentation --no-metatdata
+
+That would fetch all rules up to TLP (Traffic Light Protocol) amber, malware type ransomeware,
+intrusionset vodka, with no documentation, and no metadata in the rules......
+
+etc...

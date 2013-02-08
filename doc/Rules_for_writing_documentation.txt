@@ -1,0 +1,8 @@
+## This file will try to explain how to write the rules documentation, so they pass the pre-commit hooks.
+#########################################################################################################
+
+
+
+
+#documentation (sid:3000001; docrev:1; head:"This rule is just an example and should not be used! It tries to catch the VeryBad trojan that that the infamouse hacker group ffss use."; body:"Here you can write a longer wrapup if you need. This can explain alot more details of what it tries to detect etc."; false_positive:"This rule should give a very low rate of false positives"; false_negative:"They might accure, but no known"; false_positive_score:1; false_negative_score:1; severity:1; confidence:90; impact:"Loss of Integrity, Information Disclosure"; ease_of_attack:"Simple,driveby or social engineering"; corrective_actions:"Update antivirus software and signatures. Always keep operation system up to date with patches";)
+

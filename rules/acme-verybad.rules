@@ -1,0 +1,17 @@
+####################################################################################################
+#documentation (sid:3000001; docrev:1; head:"This rule is just an example and should not be used! It tries to catch the VeryBad trojan that that the infamouse hacker group ffss use."; body:"Here you can write a longer wrapup if you need. This can explain alot more details of what it tries to detect etc."; false_positive:"This rule should give a very low rate of false positives"; false_negative:"They might accure, but no known"; false_positive_score:1; false_negative_score:1; severity:1; confidence:90; impact:"Loss of Integrity, Information Disclosure"; ease_of_attack:"Simple,driveby or social engineering"; corrective_actions:"Update antivirus software and signatures. Always keep operation system up to date with patches";)
+## sid:3000001;
+## If a line with the format /^## sid:\d{7};/ is found:
+##  - Then lines that starts with double /^## (.*)$/ will be read and stored as extra documentation.
+##  - It will continue storing lines until it finds a line that matches: /^## ##$/
+##  - If such a line is not found, alle the lines will be discardet!
+##  - So keep extra log data here, like this etc:
+## md5: b2645fa1ad2229a1c8f86eb222270d52
+## GET /undex.asp?ffss=e9a1c8f86eb HTTP/1.1
+## User-Agent: c00l
+## Host: www.verybad.com
+## Pragma: no-cache
+## ##
+alert http $HOME_NET any -> $EXTERNAL_NET any (msg:"ACRONYME TROJAN Win32.VeryBad.A Checkin"; flow:established,to_server; content:"GET"; http_method; content:".asp?ffss="; http_uri; content:"c00l"; depth:4; http_user_agent; reference:md5,32fe6f4cb2c33511f080411413ab3bd2; metadata:author acronyme-user, dengine suricata-1.4, tlp amber, type targeted, killchain c2, intrusionset ffss, enabled yes, date_created 2013-01-01, date_modified 2013-01-09; classtype:trojan-activity; sid:3000001; rev:2;)
+#threshold gen_id 1, sig_id 3000001, type limit, track by_src, count 1, seconds 15
+#suppress gen_id 1, sig_id 3000001, track by_src, ip 192.168.0.1

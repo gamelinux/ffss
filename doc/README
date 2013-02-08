@@ -1,0 +1,36 @@
+#
+#  ______ ______ ______  ______
+# /\  ___/\  ___/\  ___\/\  ___\
+# \ \  __\ \  __\ \___  \ \___  \
+#  \ \_\  \ \_\  \/\_____\/\_____\
+#   \/_/   \/_/   \/_____/\/_____/
+#
+# - A Framework For Sid Sharing
+#
+
+A bit of background on why I made this.
+
+First off, I have no expectations that you or others will take
+this policy for writing rules into use. I have personally made
+this to make it easier for me to write rules, keep track of 
+documentation, and make it easier for my self to share rules.
+
+Some times when someone shares a IDS signature with you, they
+might lack enough context for you to figure out by your self
+what the rule is actually trying to catch. Maybe they told
+you, but you forgot? Anyways, the next time you get a rule
+from the same person, or from someone else, the rule is written
+totally different, as the "rule writing style" changes, and
+can be harder for you to read and understand.... or even
+lack some fields that should be there?
+
+I have for some time used the metadata field to push tags
+into rules that I have experienced over time can be handy
+when making and sharing rules.
+
+I hope you find that this is a good thing to have in the
+rule writing community, and if you try it out, give feedback
+to if it worked for you or not, and why not :)
+
+This "policy" will evolve over time if needed.
+
