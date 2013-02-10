@@ -178,7 +178,7 @@ sub verify_rule() {
 
   # Check some basic orders, so we are consistent in our rules:
   unless ( $rf->{'options'} =~ /msg:.*metadata:.*classtype:.*sid:.*rev:/ ) {
-    print "[E] Rule optionorder inconsistency: '$RFILE'\n";
+    print "[E] Rule optionorder inconsistency for sid:". $rf->{'sid'} .": '$RFILE'\n";
     print "[D] Should be: (msg:.*metadata:.*classtype:.*sid:.*rev:)\n" if $DEBUG;
     return $rf;
   }
@@ -188,12 +188,12 @@ sub verify_rule() {
   if ( $rf->{'options'} =~ /flow:\s*([\w,]+)\s*;/ ) {
     my $flow = $1;
     if ( $flow =~ /(from_server|from_client)/ ) {
-      print "[E] flow option inconsistency (use to_server/to_client): $flow '$RFILE'\n";
+      print "[E] flow option inconsistency (use to_server/to_client) for sid:". $rf->{'sid'} .": '$RFILE'\n";
       print "[D] RULE: $rule\n" if $DEBUG;
       return $rf;
     }
     if ( $flow =~ /_(server|client).*(established|stateless)/ ) {
-      print "[E] flow option inconsistency (use state before direction): $flow '$RFILE'\n";
+      print "[E] flow option inconsistency (use state before direction) for sid:". $rf->{'sid'} .": '$RFILE'\n";
       print "[D] RULE: $rule\n" if $DEBUG;
       return $rf;
     }
@@ -201,19 +201,19 @@ sub verify_rule() {
 
   # Error if we see common cases of missing space, like ";keyword:" 
   if ( $rf->{'options'} =~ /;(msg|flow|content|dsize|flowint|flowbits|stream_size|reference|metadata|sid|rev):/ ) {
-    print "[E] Possible missing space between keyword ($1) and option. '$RFILE'\n";
+    print "[E] Possible missing space between keyword ($1) and option for sid:". $rf->{'sid'} .": '$RFILE'\n";
     print "[D] RULE: $rule\n" if $DEBUG;
   }
 
   # Error if we see common cases of extra space, like "keyword: option" 
   if ( $rf->{'options'} =~ /(msg|flow|content|dsize|flowint|flowbits|stream_size|reference|metadata|sid|rev): / ) {
-    print "[E] Possible extra space between keyword ($1) and option. '$RFILE'\n";
+    print "[E] Possible extra space between keyword ($1) and option for sid:". $rf->{'sid'} .": '$RFILE'\n";
     print "[D] RULE: $rule\n" if $DEBUG;
   }
 
   # My way of writing metadata should be there, else fail!
   unless ( $rf->{'options'} =~ / metadata:\s*(.*)\s*; classtype:/ ) {
-    print "[E] Metadata missing/b0rked in rule: '$RFILE'\n";
+    print "[E] Metadata missing/b0rked for sid:". $rf->{'sid'} .": '$RFILE'\n";
     print "[D] RULE: $rule\n" if $DEBUG;
     return $rf;
   }
@@ -222,8 +222,8 @@ sub verify_rule() {
   # Now pick the metadata appart!
   # author acronyme-user, dengine snort-2.9.4, tlp white, type banker, killchain c2, intrusionset poetlovers, date_created 2013-01-01, date_modified 2013-01-12
   unless ( $rf->{'metadata'} =~ /^author (.+), dengine (.+), tlp (.+), type (.+), killchain (.+), intrusionset (.+), enabled (.+), date_created (.+), date_modified (.+)$/ ) {
-    print "[E] Metadata b0rked in rule: '$RFILE'\n";
-    print "[D] RULE: $rf->{'metadata'}\n" if $DEBUG;
+    print "[E] Metadata b0rked for sid:". $rf->{'sid'} .": '$RFILE'\n";
+    print "[D] RULE: $rule\n" if $DEBUG;
     return $rf;
   }
   ($rf->{'author'}, $rf->{'dengine'}, $rf->{'tlp'}, $rf->{'type'}, $rf->{'killchain'}, $rf->{'intrusionset'}, $rf->{'enabled'}, $rf->{'date_created'}, $rf->{'date_modified'})
@@ -231,39 +231,39 @@ sub verify_rule() {
 
   # Check for valid TLP color :)
   unless ( $rf->{'tlp'} =~ /^(white|green|amber|red)$/ ) {
-    print "[E] Invalid TLP: $rf->{'tlp'} in '$RFILE'\n";
+    print "[E] Invalid TLP: ". $rf->{'tlp'} ." for sid:". $rf->{'sid'} .":'$RFILE'\n";
     print "[D] RULE: $rule\n" if $DEBUG;
     return $rf;
   }
 
   # Check for more or less valid dengine
   unless ( $rf->{'dengine'} =~ /^((snort|suricata)-(\d\.\d{1,2}(\.\d{1,2})?))$/ ) {
-    print "[E] Invalid dengine: $rf->{'dengine'} in '$RFILE'\n";
+    print "[E] Invalid dengine: ". $rf->{'dengine'} ." for sid:". $rf->{'sid'} .": '$RFILE'\n";
     print "[D] RULE: $rule\n" if $DEBUG;
     return $rf;
   }
 
   # Check for valid KillChain state
   unless ( $rf->{'killchain'} =~ /^(reconnaissance|weaponization|delivery|exploitation|installation|c2|actions)$/ ) {
-    print "[E] Invalid killchain entry: $rf->{'killchain'} in '$RFILE'\n";
+    print "[E] Invalid killchain entry: ". $rf->{'killchain'} ." for sid:". $rf->{'sid'} .": '$RFILE'\n";
     print "[D] RULE: $rule\n" if $DEBUG;
     return $rf;
   }
 
   unless ( $rf->{'date_created'} =~ /^\d\d\d\d-\d\d-\d\d$/ ) {
-    print "[E] Invalid date_created: $rf->{'date_created'} in '$RFILE'\n";
+    print "[E] Invalid date_created: " .$rf->{'date_created'} ." for sid:". $rf->{'sid'} .": '$RFILE'\n";
     print "[D] RULE: $rule\n" if $DEBUG;
     return $rf;
   }
 
   unless ( $rf->{'date_modified'} =~ /^\d\d\d\d-\d\d-\d\d$/ ) {
-    print "[E] Invalid date_modified: $rf->{'date_created'} in '$RFILE'\n";
+    print "[E] Invalid date_modified: ". $rf->{'date_created'} ." for sid:". $rf->{'sid'} .": '$RFILE'\n";
     print "[D] RULE: $rule\n" if $DEBUG;
     return $rf;
   }
 
   unless ( $rf->{'enabled'} =~ /^(yes|no)$/ ) {
-    print "[E] Invalid state for enabled: $rf->{'enabled'} in '$RFILE'\n";
+    print "[E] Invalid state for enabled: ". $rf->{'enabled'} ." for sid:". $rf->{'sid'} .": '$RFILE'\n";
     print "[D] RULE: $rule\n" if $DEBUG;
     return $rf;
   }
