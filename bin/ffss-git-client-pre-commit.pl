@@ -31,17 +31,15 @@ my $rules = {};
 my $nextsid = 9000000;
 
 sub get_highest_sid (\%) {
-    my $hash   = shift;
-    my ($key, @keys) = keys   %$hash;
-    my ($big, @vals) = values %$hash;
+    my $hash = shift;
+    my $big  = 0;
 
-    for (0 .. $#keys) {
-        if ($vals[$_] > $big) {
-            $big = $vals[$_];
-            $key = $keys[$_];
-        }
+    foreach my $sid (keys %$hash) {
+      if ( $sid > $big ) {
+        $big = $sid;
+      }
     }
-    $key
+    return $big;
 }
 
 $rules = parse_all_rule_files($RULESDIR,$rules,$VERBOSE,$DEBUG);
@@ -244,7 +242,7 @@ sub verify_rule() {
   }
 
   # Check for valid KillChain state
-  unless ( $rf->{'killchain'} =~ /^(reconnaissance|weaponization|delivery|exploitation|installation|c2|actions)$/ ) {
+  unless ( $rf->{'killchain'} =~ /^(reconnaissance|weaponization|delivery|exploitation|installation|c2|actions|none)$/ ) {
     print "[E] Invalid killchain entry: ". $rf->{'killchain'} ." for sid:". $rf->{'sid'} .": '$RFILE'\n";
     print "[D] RULE: $rule\n" if $DEBUG;
     return $rf;
