@@ -58,6 +58,7 @@ sub get_highest_sid (\%) {
 
 $^W = 1;
 
+our $conn = MongoDB::Connection->new(host => $MONGOHOST);
 $rules = parse_all_rule_files($RULESDIR,$rules,$VERBOSE,$DEBUG);
 my $sids = {};
 $sids = $rules->{1};
@@ -77,13 +78,13 @@ exit 0;
 =cut
 
 sub push_to_mongodb {
+  our $conn;
+
   my $sids  = shift;
   my $total = 0;
   my $new   = 0;
-  #my $conn = MongoDB::Connection->new(host => '127.0.0.1:27017');
-  my $conn = MongoDB::Connection->new();
-  my $db   = $conn->rules;
-  my $dbr  = $db->$MONGOTBL;
+  my $db    = $conn->rules;
+  my $dbr   = $db->$MONGOTBL;
   
   foreach my $sid (keys (%$sids)) {
     my $match = 0;
@@ -158,8 +159,8 @@ sub push_to_mongodb {
 =cut
 
 sub update_current_rules_mongodb {
-  my $conn = MongoDB::Connection->new();
-  my $db   = $conn->rules;
+  our $conn;
+  my $db  = $conn->rules;
   
   my $map = <<MAP;
   function() {
