@@ -31,6 +31,9 @@ use Digest::MD5 qw(md5_hex);
 use Getopt::Long;
 
 # Defaults, no need to change.
+my $MONGOHOST = "localhost";
+my $MONGOUSER = undef;
+my $MONGOPASS = undef;
 my $MONGOTBL= "rules";
 my $RULESDIR= "rules/"; 
 
@@ -38,7 +41,10 @@ my $VERBOSE = 0;
 my $DEBUG   = 0;
 my $GID     = 1;
 
-GetOptions ("dbname=s" => \$MONGOTBL);
+GetOptions ( "dbname=s" => \$MONGOTBL
+           , "dbhost:s" => \$MONGOHOST
+           , "dbuser:s" => \$MONGOUSER
+           , "dbpass:s" => \$MONGOPASS);
 my $MONGOTBL_C = $MONGOTBL ."_current";
 
 my $rules = {};
@@ -58,7 +64,13 @@ sub get_highest_sid (\%) {
 
 $^W = 1;
 
-our $conn = MongoDB::Connection->new(host => $MONGOHOST);
+if (defined $MONGOUSER and defined $MONGOPASS) {
+  our $conn = MongoDB::Connection->new(host => $MONGOHOST
+                                     , username => $MONGOUSER
+                                     , password => $MONGOPASS);
+} else {
+  our $conn = MongoDB::Connection->new(host => $MONGOHOST);
+}
 $rules = parse_all_rule_files($RULESDIR,$rules,$VERBOSE,$DEBUG);
 my $sids = {};
 $sids = $rules->{1};
