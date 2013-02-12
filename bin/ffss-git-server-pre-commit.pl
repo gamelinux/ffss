@@ -44,7 +44,8 @@ my $GID     = 1;
 GetOptions ( "dbname=s" => \$MONGOTBL
            , "dbhost:s" => \$MONGOHOST
            , "dbuser:s" => \$MONGOUSER
-           , "dbpass:s" => \$MONGOPASS);
+           , "dbpass:s" => \$MONGOPASS
+           , "rulesdir:s" => \$RULESDIR);
 my $MONGOTBL_C = $MONGOTBL ."_current";
 
 my $rules = {};
