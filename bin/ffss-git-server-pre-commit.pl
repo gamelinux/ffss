@@ -31,6 +31,9 @@ use Digest::MD5 qw(md5_hex);
 use Getopt::Long;
 
 # Defaults, no need to change.
+my $MONGOHOST = "localhost";
+my $MONGOUSER = undef;
+my $MONGOPASS = undef;
 my $MONGOTBL= "rules";
 my $RULESDIR= "rules/"; 
 
@@ -38,7 +41,11 @@ my $VERBOSE = 0;
 my $DEBUG   = 0;
 my $GID     = 1;
 
-GetOptions ("dbname=s" => \$MONGOTBL);
+GetOptions ( "dbname=s" => \$MONGOTBL
+           , "dbhost:s" => \$MONGOHOST
+           , "dbuser:s" => \$MONGOUSER
+           , "dbpass:s" => \$MONGOPASS
+           , "rulesdir:s" => \$RULESDIR);
 my $MONGOTBL_C = $MONGOTBL ."_current";
 
 my $rules = {};
@@ -58,6 +65,13 @@ sub get_highest_sid (\%) {
 
 $^W = 1;
 
+if (defined $MONGOUSER and defined $MONGOPASS) {
+  our $conn = MongoDB::Connection->new(host => $MONGOHOST
+                                     , username => $MONGOUSER
+                                     , password => $MONGOPASS);
+} else {
+  our $conn = MongoDB::Connection->new(host => $MONGOHOST);
+}
 $rules = parse_all_rule_files($RULESDIR,$rules,$VERBOSE,$DEBUG);
 my $sids = {};
 $sids = $rules->{1};
@@ -77,13 +91,13 @@ exit 0;
 =cut
 
 sub push_to_mongodb {
+  our $conn;
+
   my $sids  = shift;
   my $total = 0;
   my $new   = 0;
-  #my $conn = MongoDB::Connection->new(host => '127.0.0.1:27017');
-  my $conn = MongoDB::Connection->new();
-  my $db   = $conn->rules;
-  my $dbr  = $db->$MONGOTBL;
+  my $db    = $conn->rules;
+  my $dbr   = $db->$MONGOTBL;
   
   foreach my $sid (keys (%$sids)) {
     my $match = 0;
@@ -158,8 +172,8 @@ sub push_to_mongodb {
 =cut
 
 sub update_current_rules_mongodb {
-  my $conn = MongoDB::Connection->new();
-  my $db   = $conn->rules;
+  our $conn;
+  my $db  = $conn->rules;
   
   my $map = <<MAP;
   function() {
@@ -192,7 +206,7 @@ REDUCE
                              "out"       => $MONGOTBL_C
                             );
   
-  print "[*] Updateing current rules...\n";
+  print "[*] Updating current rules...\n";
   my $res = $db->run_command($cmd);
   #print Dumper $res;
   if ($res->{ok} == 1) {
