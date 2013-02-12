@@ -5,8 +5,6 @@
 # /path/to/your/git/repositories/<ffss>.git/hooks/pre-receive
 #
 # Change the configuration to fit your needs:
-# Where to test the commit:
-TMPRDIR="/tmp/ffss-rules/"
 # What mongodb table to insert rules to:
 MONGODBTBL="ffss_rules"
 
@@ -14,7 +12,7 @@ while read oldrev newrev refname; do
   # Only run script for master branch
   if [[ $refname = "refs/heads/master" ]] ; then
     echo "Preparing to run tests for $newrev ... "
-    mkdir -p $TMPRDIR > /dev/null
+    TMPRDIR=$(mktemp -d)
     git archive $newrev | tar -x -C $TMPRDIR
 
     echo "Running tests for $newrev ... "
@@ -22,6 +20,8 @@ while read oldrev newrev refname; do
     cd $TMPRDIR
     /usr/local/bin/ffss-git-server-pre-commit.pl --dbname $MONGODBTBL
     rc=$?
+
+    rm -rf $TEMPRDIR
 
     if [[ $rc != 0 ]] ; then
       echo "Tests failed on rev $newrev - push deniend!"
