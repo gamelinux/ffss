@@ -192,7 +192,7 @@ REDUCE
                              "out"       => $MONGOTBL_C
                             );
   
-  print "[*] Updateing current rules...\n";
+  print "[*] Updating current rules...\n";
   my $res = $db->run_command($cmd);
   #print Dumper $res;
   if ($res->{ok} == 1) {
