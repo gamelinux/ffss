@@ -2,20 +2,45 @@
 INSTALL
 =======
 
+CLIENT
+======
+This should be done for evry user:
+
 copy the bin/git-client-pre-commit.pl to .git/hooks/pre-commit and make sure the file is executable.
 
 That should ensure you that when you do a git commit, that all relevant check on you local repo is
 done, and that its ok to try to push them to "origin master" if needed.
 
 
-To come:
-There is also a bin/git-server-pre-commit.pl script that I will commit soon, that will
-do the same verification on the server side, but it will also push the rules into a mongodb.
 
-This is to ensure, that if you update a sid, you need to change the revision :)
+SERVER
+======
 
-Mongodb will also be used to fetch the autorative rules from that you should push out to
-your sensors in some way (or manage/fetch them by Oinkmaster/Pulledpork/Polman etc).
+ffss-git-server-pre-commit.pl  ffss-git-server-pre-receive.sh
+
+There is a bin/ffss-git-server-pre-receive.sh that should be placed on your git server:
+ /path/to/your/git/repositories/ffss-rules.git/hooks/pre-receive
+
+$ cp bin/ffss-git-server-pre-receive.sh /path/to/your/git/repositories/ffss-rules.git/hooks/pre-receive
+
+Also copy ffss-git-server-pre-commit.pl to /usr/local/bin/
+
+$ cp bin/ffss-git-server-pre-commit.pl /usr/local/bin/
+
+Make sure they are executable...
+
+Each time some client pushes to the server, the server will execute that script against the
+master branch, and error out if something fails, thus failing your push! Read the error messages,
+and fix, then push again :) The git client pre-commit script should have helped you far by now,
+but what if someone snags a sid right before you, and your push will have a collition.....
+The server side scripts will help here. It will also tell you if you have edited a sid, and
+forget to up the revision nr.
+
+
+The ffss-git-server-pre-commit.pl also stores the rules (all versions of them) in a mongodb
+backend. It also updates a list of sids with its current highest revision nr. The list is
+used for fetching the latest ruleset.
+
 
 A script to fetch rules and doc from the mongodb will be made, so if you want to share
 a set of specific rules, you can do something like this to extract them:
