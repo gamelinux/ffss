@@ -135,7 +135,7 @@ sub verify_rule() {
   my $rf = {};
   $rf->{OK} = 0;
 
-  return $rf if not ( $rule =~ /^\#? ?(drop|alert|log|pass|activate|dynamic)\s+(\S+?)\s+(\S+?)\s+(\S+?)\s+(\S+?)\s+(\S+?)\s+(\S+?)\s+\((.*)\)$/);
+  return $rf if not ( $rule =~ /^\#? ?(drop|alert|log|pass|activate|dynamic)\s+(\S+?)\s+(\S+?)\s+(\S+?)\s+(\S+?)\s+(\S+?)\s+(\S+?)\s+\((.*)\)\s*$/);
   ($rf->{'action'}, $rf->{'proto'}, $rf->{'sip'}, $rf->{'sport'}, $rf->{'dir'}, $rf->{'dip'}, $rf->{'dport'}, $rf->{'options'}) = ($1, $2, $3, $4, $5, $6, $7, $8);
 
   #$rule =~ /^\#? ?(drop|alert|log|pass|activate|dynamic)\s+(\S+?)\s+(\S+?)\s+(\S+?)\s+(\S+?)\s+(\S+?)\s+(\S+?)\s+\((.*)\)$/;
@@ -143,6 +143,12 @@ sub verify_rule() {
 
   unless($rule) {
     print "[E] Error: Not a valid rule in: '$RFILE'\n";
+    print "[D] RULE: $rule\n" if $DEBUG;
+    return $rf;
+  }
+
+  if ( $rule =~ / $/ ) {
+    print "[E] Error: Rule has trailing whitespaces: '$RFILE'\n";
     print "[D] RULE: $rule\n" if $DEBUG;
     return $rf;
   }
