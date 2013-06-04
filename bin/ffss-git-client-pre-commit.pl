@@ -170,7 +170,11 @@ sub verify_rule() {
   $rf->{'options'} =~ /msg:\s*\"(.*?)\"\s*;/;
   $rf->{'msg'} = $1;
 
-  $rf->{'options'} =~ /rev:\s*(\d+?)\s*;/;
+  unless( $$rf->{'options'} =~ /rev:\s*(\d+?)\s*;/ ) {
+    print "[E] No rev found in rule options: '$RFILE'\n";
+    print "[D] RULE: $rf->{'options'}\n" if $DEBUG;
+    return $rf;
+  }
   $rf->{'rev'} = $1;
 
   # This also removes comments in rules (making them active)
