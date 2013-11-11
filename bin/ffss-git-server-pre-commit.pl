@@ -49,6 +49,8 @@ GetOptions ( "dbname=s" => \$MONGOTBL
 my $MONGOTBL_C = $MONGOTBL ."_current";
 
 my $rules = {};
+# 9000000 default sid-range which is 7 digits - change this if you change $nextsid to be more than 7 digits
+my $sid_digits = 7;
 my $nextsid = 9000000;
 
 sub get_highest_sid (\%) {
@@ -335,6 +337,14 @@ sub verify_rule() {
     return $rf;
   }
   $rf->{'sid'} = $1;
+
+  # Simple check to see if the sid is b0rked
+  if ( length $rf->{'sid'} != $sid_digits ) {
+    print "[E] Bad sid range found in rule options: '$RFILE'\n";
+    print "[D] RULE: $rf->{'options'}\n" if $DEBUG;
+    exit 1;
+    return $rf;
+  }
 
   $rf->{'options'} =~ /msg:\s*\"(.*?)\"\s*;/;
   $rf->{'msg'} = $1;
