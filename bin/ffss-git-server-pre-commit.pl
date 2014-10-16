@@ -98,8 +98,8 @@ sub push_to_mongodb {
   my $sids  = shift;
   my $total = 0;
   my $new   = 0;
-  my $db    = $conn->rules;
-  my $dbr   = $db->$MONGOTBL;
+  my $db    = $conn->get_database('rules');
+  my $dbr   = $db->get_collection($MONGOTBL);
   
   foreach my $sid (keys (%$sids)) {
     my $match = 0;
